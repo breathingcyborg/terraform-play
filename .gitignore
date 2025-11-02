@@ -45,3 +45,5 @@ terraform.rc
 
 tf-play-ssh-key
 tf-play-ssh-key.pub
+
+node_modules
