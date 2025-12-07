@@ -1,8 +1,9 @@
 set -e
 
 cd ./ecs
-endpoint="http://$(terraform output -raw alb_url)/"
-# endpoint="https://example.com"
+
+endpoint="https://$(terraform output -raw domain_name)/"
+echo "endpoint: " $endpoint;
 
 minutes=3
 parallel_requests=3

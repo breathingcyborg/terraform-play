@@ -14,7 +14,8 @@ resource "aws_alb" "load_balancer" {
   enable_deletion_protection = false
 }
 
-# listener to receive http request and forward it to alb
+# listener to receive http request and forward it to target group
+# ecs service would dynamically register task to this target group
 resource "aws_lb_listener" "http" {
   port              = 80
   protocol          = "HTTP"
@@ -28,6 +29,29 @@ resource "aws_lb_listener" "http" {
     }
   }
 }
+
+# listener to receive https request and forward it to target group
+# ecs service would dynamically register task to this target group
+resource "aws_lb_listener" "https" {
+  port              = 443
+  protocol          = "HTTPS"
+  load_balancer_arn = aws_alb.load_balancer.arn
+
+  # ssl config
+  ssl_policy      = "ELBSecurityPolicy-2016-08"
+  certificate_arn = data.terraform_remote_state.ssl_state.outputs.certificate_arn
+
+  default_action {
+    type = "forward"
+    forward {
+      target_group {
+        arn = aws_alb_target_group.tg.arn
+      }
+    }
+  }
+}
+
+
 
 # alb target group
 # load balancer listener forwards request to this target group
